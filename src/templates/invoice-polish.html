@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      color: #000;
+    }
+    .header {
+      margin-bottom: 30px;
+    }
+    .company-info {
+      margin-bottom: 20px;
+    }
+    .invoice-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .two-column {
+      display: flex;
+      justify-content: space-between;
+    }
+    .left-column {
+      flex: 1;
+    }
+    .right-column {
+      flex: 1;
+      text-align: left;
+      padding-left: 50px;
+    }
+    .info-section {
+      margin-bottom: 15px;
+    }
+    .info-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+    }
+    th {
+      background-color: #d3d3d3;
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #000;
+    }
+    td {
+      padding: 10px;
+      border: 1px solid #000;
+    }
+    .total-row {
+      background-color: #d3d3d3;
+      font-weight: bold;
+    }
+    .payment-terms {
+      margin-top: 30px;
+    }
+    .section-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .footer {
+      margin-top: 40px;
+    }
+    .signature {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .email-link {
+      color: blue;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <p>Bardzo dziękuję za współpracę.</p>
+    <p>Zgodnie z naszą Umową o świadczenie usług, naliczam następujące opłaty za moje usługi:</p>
+  </div>
+
+  <div class="company-info">
+    <p>{{company.name}}</p>
+    <p>{{company.address}}</p>
+    <p>{{company.addressLine2}}</p>
+    <p>{{company.city}} {{company.postalCode}}</p>
+    <p><strong>Date: {{invoiceDate}}</strong></p>
+  </div>
+
+  <div class="two-column">
+    <div class="left-column">
+      <div class="invoice-title">Faktura</div>
+
+      <div class="section-title">Opis usług</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Opis</th>
+            <th style="text-align: right; width: 150px;">RAZEM</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each lineItems}}
+          <tr>
+            <td>{{this.descriptionPl}}</td>
+            <td style="text-align: right;">{{this.amount}} {{../currency}}</td>
+          </tr>
+          {{/each}}
+          <tr class="total-row">
+            <td>RAZEM</td>
+            <td style="text-align: right;">{{total}} {{currency}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="payment-terms">
+        <div class="section-title">Warunki płatności</div>
+        <p>Płatność należy dokonać w ciągu 20 dni od otrzymania faktury.</p>
+      </div>
+
+      <div class="footer">
+        <p>Dziękuję za zaufanie i czekam na dalszą współpracę.</p>
+        <p>Z poważaniem</p>
+        <p class="signature">{{personal.name}} {{personal.surname}}</p>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="info-section">
+        <div class="info-label">Numer faktury</div>
+        <p>{{invoiceNumber}}</p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Adres</div>
+        <p>{{recipient.address}}</p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">eMail</div>
+        <p><a href="mailto:{{personal.email}}" class="email-link">{{personal.email}}</a></p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Odbiorca</div>
+        <p>{{recipient.name}}</p>
+        <p>NIP {{recipient.nip}}</p>
+        <p>REGON {{recipient.regon}}</p>
+      </div>
+
+      <div class="info-section">
+        <div class="info-label">Dane bankowe</div>
+        <p>{{bank.bankName}}</p>
+        <p>{{bank.bankAddress}}</p>
+        <p>Numer Paszportu Beneficjenta: {{bank.beneficiaryPassport}}</p>
+        <p>IBAN: {{bank.iban}}</p>
+        <p>BIC: {{bank.bic}}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

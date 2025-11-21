@@ -1,16 +1,19 @@
 import { Config } from '../types/invoice';
-import { format } from 'date-fns';
+import { TemplateRenderer } from '../utils/templateRenderer';
 
 export interface EmailTemplate {
   subject: string;
   body: string;
+  html: string;
 }
 
 export class EmailGenerator {
   private config: Config;
+  private templateRenderer: TemplateRenderer;
 
   constructor(config: Config) {
     this.config = config;
+    this.templateRenderer = new TemplateRenderer();
   }
 
   public generateEmail(month: string): EmailTemplate {
@@ -19,24 +22,14 @@ export class EmailGenerator {
 
     const subject = `${fullName} ${month} Invoice for Service`;
 
-    const body = `Hello everyone,
+    const templateData = {
+      month,
+      personal: this.config.personal
+    };
 
-Hope you are doing well. Please find attached the invoice for ${month}.
+    const { html, text } = this.templateRenderer.renderEmail(templateData);
 
-Best Regards,
-${personal.name}
-
-StashAway
-${fullName}
-Staff Engineer
-StashAway
-Phone & WhatsApp: ${personal.phone}
-StashAway, 105 Cecil St, #14-01 The Octagon, Singapore 069534
-www.stashaway.sg | ${personal.email}
-
-Download on the App Store | Get it on Google Play`;
-
-    return { subject, body };
+    return { subject, body: text, html };
   }
 
   public generatePlainTextEmail(month: string): string {
@@ -44,5 +37,13 @@ Download on the App Store | Get it on Google Play`;
     return `Subject: ${template.subject}
 
 ${template.body}`;
+  }
+
+  public generateHTMLEmail(month: string): string {
+    const template = this.generateEmail(month);
+    return `Subject: ${template.subject}
+Content-Type: text/html; charset=UTF-8
+
+${template.html}`;
   }
 }

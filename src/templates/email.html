@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+    .signature {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .signature .name {
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .signature .title {
+      font-style: italic;
+      color: #666;
+    }
+    .signature .company {
+      font-weight: bold;
+      color: #1a73e8;
+    }
+    .signature .contact {
+      margin-top: 10px;
+    }
+    .signature .links {
+      margin-top: 15px;
+    }
+    .signature a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    .signature a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <p>Hello everyone,</p>
+
+  <p>Hope you are doing well. Please find attached the invoice for <strong>{{month}}</strong>.</p>
+
+  <div class="signature">
+    <p>Best Regards,<br>
+    {{personal.name}}</p>
+
+    <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #1a73e8;">
+      <p class="company">StashAway</p>
+      <p class="name">{{personal.name}} {{personal.surname}}</p>
+      <p class="title">Staff Engineer</p>
+      <p class="company">StashAway</p>
+
+      <div class="contact">
+        <p>📱 Phone & WhatsApp: {{personal.phone}}</p>
+        <p>📍 StashAway, 105 Cecil St, #14-01 The Octagon, Singapore 069534</p>
+        <p>🌐 <a href="https://www.stashaway.sg">www.stashaway.sg</a> | <a href="mailto:{{personal.email}}">{{personal.email}}</a></p>
+      </div>
+
+      <div class="links">
+        <p>
+          <a href="https://apps.apple.com/app/stashaway" style="margin-right: 15px;">📲 Download on the App Store</a>
+          <a href="https://play.google.com/store/apps/details?id=com.stashaway">📲 Get it on Google Play</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

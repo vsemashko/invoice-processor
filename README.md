@@ -7,8 +7,10 @@ Automated bilingual (English/Polish) invoice generator with email templates for 
 - Generates professional PDF invoices with two pages (English and Polish)
 - Automatic invoice numbering based on date
 - Supports variable line items (salary, bonus, reimbursements)
-- Creates formatted email templates with StashAway signature
+- Creates **both HTML and plain text** email templates with StashAway signature
+- **Template-based customization** - easy to adjust layouts, colors, and styling
 - Configurable personal, company, recipient, and bank details
+- Built with Handlebars templates for maximum flexibility
 
 ## Installation
 
@@ -96,10 +98,11 @@ npm run generate -- generate --salary 1000 --currency EUR --month November
 
 ## Output
 
-The tool generates two files:
+The tool generates three files:
 
 1. **Invoice PDF** (e.g., `invoice.pdf`) - Two-page bilingual invoice
-2. **Email Template** (e.g., `invoice_email.txt`) - Formatted email text with subject and body
+2. **Plain Text Email** (e.g., `invoice_email.txt`) - Plain text email with subject and body
+3. **HTML Email** (e.g., `invoice_email.html`) - Rich HTML email with styling, clickable links, and formatting
 
 ## Project Structure
 
@@ -111,11 +114,19 @@ invoice-processor/
 │   ├── generators/
 │   │   ├── pdfGenerator.ts     # PDF generation logic
 │   │   └── emailGenerator.ts   # Email template generation
+│   ├── templates/              # Handlebars templates
+│   │   ├── email.html          # HTML email template
+│   │   ├── invoice-english.html # English invoice HTML
+│   │   └── invoice-polish.html  # Polish invoice HTML
+│   ├── utils/
+│   │   └── templateRenderer.ts # Template rendering utilities
 │   └── index.ts                # CLI entry point
 ├── config.json                 # Your configuration (not in git)
 ├── config.example.json         # Example configuration template
 ├── package.json
-└── tsconfig.json
+├── tsconfig.json
+├── README.md                   # This file
+└── TEMPLATE_CUSTOMIZATION.md   # Guide for customizing templates
 ```
 
 ## Configuration
@@ -154,6 +165,44 @@ The `config.json` file contains all your personal and business details:
   }
 }
 ```
+
+## Template Customization
+
+**All templates use Handlebars and are easy to customize!**
+
+The system uses HTML templates with CSS styling, making it simple to:
+
+✅ Change colors, fonts, and layout
+✅ Add or remove fields
+✅ Modify email signatures
+✅ Adjust invoice formatting
+
+### Quick Customization Examples
+
+**Change email colors:**
+Edit `src/templates/email.html` and modify the CSS:
+```css
+.signature .company {
+  color: #1a73e8;  /* Change to your brand color */
+}
+```
+
+**Adjust invoice table styling:**
+Edit `src/templates/invoice-english.html`:
+```css
+th {
+  background-color: #d3d3d3;  /* Change header color */
+}
+```
+
+**See the full customization guide:** [TEMPLATE_CUSTOMIZATION.md](TEMPLATE_CUSTOMIZATION.md)
+
+This guide includes:
+- How to change layouts and styling
+- Adding logos and images
+- Modifying fields and data
+- Best practices for template editing
+- Common customization tasks
 
 ## Development
 

@@ -4,3 +4,5 @@ dist/
 *.log
 config.json
 .env
+*_email.txt
+*_email.html

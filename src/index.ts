@@ -124,14 +124,21 @@ program
       pdfGenerator.generate(invoiceData, outputPath).then(() => {
         console.log(`✓ Invoice PDF generated: ${outputPath}`);
 
-        // Generate email template
+        // Generate email templates
         if (options.month) {
           const emailGenerator = new EmailGenerator(config);
-          const emailTemplate = emailGenerator.generatePlainTextEmail(options.month);
 
+          // Generate plain text version
+          const emailTemplate = emailGenerator.generatePlainTextEmail(options.month);
           const emailPath = outputPath.replace('.pdf', '_email.txt');
           fs.writeFileSync(emailPath, emailTemplate);
-          console.log(`✓ Email template generated: ${emailPath}`);
+          console.log(`✓ Plain text email template: ${emailPath}`);
+
+          // Generate HTML version
+          const htmlTemplate = emailGenerator.generateHTMLEmail(options.month);
+          const htmlEmailPath = outputPath.replace('.pdf', '_email.html');
+          fs.writeFileSync(htmlEmailPath, htmlTemplate);
+          console.log(`✓ HTML email template: ${htmlEmailPath}`);
         }
 
         console.log('\nInvoice Summary:');
