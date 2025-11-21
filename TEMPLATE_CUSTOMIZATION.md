@@ -1,24 +1,27 @@
 # Template Customization Guide
 
-This guide explains how to customize the invoice and email templates to match your needs.
+This guide explains how to customize the email templates and PDF configuration for invoices.
 
 ## Overview
 
-The invoice processor uses **Handlebars templates** for all formatting, making it easy to customize:
+The invoice processor uses **two different approaches** for customization:
 
-✅ **Email Templates** - HTML with CSS styling, clickable links, and rich formatting
-✅ **Invoice Templates** - HTML-based, easily adjustable layouts
-✅ **Separation of Concerns** - Templates are separate from business logic
+✅ **Email Templates** - True HTML/CSS templates using Handlebars, no rebuild required
+⚠️ **PDF Configuration** - JSON configuration for styling, TypeScript for layout (rebuild required for layout changes)
 
 ## Template Locations
 
-All templates are in `src/templates/`:
-
+### Email Templates
 ```
 src/templates/
-├── email.html             # HTML email with StashAway signature
-├── invoice-english.html   # English invoice page
-└── invoice-polish.html    # Polish invoice page
+└── email.html             # HTML email with signature
+```
+
+### PDF Configuration
+```
+pdf-config.json            # PDF styling configuration (colors, fonts, spacing)
+src/generators/
+└── improvedPdfGenerator.ts # PDF layout and structure
 ```
 
 ## Customizing Email Templates
@@ -32,6 +35,7 @@ src/templates/
 - ✅ Emoji support
 - ✅ Professional signature layout
 - ✅ Responsive styling
+- ✅ No rebuild required
 
 ### How to Customize
 
@@ -89,374 +93,266 @@ You can use these Handlebars variables in the email template:
 - `{{personal.email}}` - Email address
 - `{{personal.phone}}` - Phone number
 
-## Customizing Invoice Templates
+### Testing Email Templates
 
-### Locations
-- `src/templates/invoice-english.html` (English version)
-- `src/templates/invoice-polish.html` (Polish version)
+**Preview in browser:**
+1. Edit `src/templates/email.html`
+2. Open the file in a web browser
+3. See changes immediately (use sample data for {{variables}})
 
-### Features
-- ✅ HTML + CSS layout (easy to adjust)
-- ✅ Flexbox-based two-column design
-- ✅ Table formatting for line items
-- ✅ Professional styling with borders and colors
+**No rebuild needed!** Just edit the HTML and save.
 
-### How to Customize
+## Customizing PDF Invoices
 
-**1. Change Table Colors:**
-```css
-/* In the <style> section */
-th {
-  background-color: #d3d3d3;  /* Table header color */
-}
+### Overview
 
-.total-row {
-  background-color: #d3d3d3;  /* Total row color */
-}
+PDFs use a **configuration-based system** with two levels:
 
-/* Try different colors: */
-background-color: #4A90E2;  /* Blue */
-background-color: #50C878;  /* Green */
-background-color: #FFA500;  /* Orange */
-```
+1. **Styling** (easy): Edit `pdf-config.json` - no rebuild required
+2. **Layout** (advanced): Edit `src/generators/improvedPdfGenerator.ts` - rebuild required
 
-**2. Adjust Layout Spacing:**
-```css
-/* Change margins between sections */
-.header {
-  margin-bottom: 30px;  /* Increase/decrease space */
-}
+### PDF Styling Configuration
 
-.payment-terms {
-  margin-top: 30px;  /* Adjust spacing */
-}
-```
+**Location:** `pdf-config.json`
 
-**3. Modify Column Widths:**
-```css
-/* Current layout */
-.left-column {
-  flex: 1;
-}
-.right-column {
-  flex: 1;
-  padding-left: 50px;
-}
+**What you can customize without rebuilding:**
+- Colors (text, table headers, borders)
+- Font sizes
+- Spacing and gaps
+- Page margins
 
-/* Make right column narrower */
-.left-column {
-  flex: 2;  /* Takes 2/3 of space */
-}
-.right-column {
-  flex: 1;  /* Takes 1/3 of space */
-}
-```
-
-**4. Add Company Logo:**
-```html
-<!-- Add at the top of the invoice -->
-<div class="header">
-  <img src="path/to/logo.png" alt="Company Logo" style="max-width: 150px; margin-bottom: 20px;">
-  <p>Thank you very much for your business.</p>
-  ...
-</div>
-```
-
-**5. Change Font Sizes:**
-```css
-body {
-  font-family: Arial, sans-serif;
-  margin: 40px;
-  color: #000;
-  font-size: 12px;  /* Base font size */
-}
-
-.invoice-title {
-  font-size: 24px;  /* Make larger/smaller */
-}
-```
-
-**6. Add Watermark:**
-```html
-<!-- Add before </body> -->
-<div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 100px; color: rgba(0,0,0,0.1); z-index: -1;">
-  PAID
-</div>
-```
-
-### Available Variables
-
-Invoice templates have access to:
-
-**Invoice Data:**
-- `{{invoiceNumber}}` - Invoice number (e.g., "21/11/2025")
-- `{{invoiceDate}}` - Formatted date (e.g., "21.11.25")
-- `{{total}}` - Total amount
-- `{{currency}}` - Currency code (e.g., "SGD")
-
-**Line Items (use with `{{#each}}`):**
-```handlebars
-{{#each lineItems}}
-  <tr>
-    <td>{{this.description}}</td>      <!-- English -->
-    <td>{{this.descriptionPl}}</td>    <!-- Polish -->
-    <td>{{this.amount}}</td>
-  </tr>
-{{/each}}
-```
-
-**Company Info:**
-- `{{company.name}}` - Company name
-- `{{company.address}}` - Street address
-- `{{company.addressLine2}}` - Building/unit
-- `{{company.city}}` - City
-- `{{company.postalCode}}` - Postal code
-
-**Personal Info:**
-- `{{personal.name}}` - First name
-- `{{personal.surname}}` - Last name
-- `{{personal.email}}` - Email
-- `{{personal.phone}}` - Phone
-
-**Recipient Info:**
-- `{{recipient.name}}` - Recipient name
-- `{{recipient.address}}` - Address
-- `{{recipient.nip}}` - Tax ID
-- `{{recipient.regon}}` - Business registry
-
-**Bank Details:**
-- `{{bank.bankName}}` - Bank name
-- `{{bank.bankAddress}}` - Bank address
-- `{{bank.iban}}` - IBAN
-- `{{bank.beneficiaryPassport}}` - Passport number
-- `{{bank.bic}}` - BIC/SWIFT code
-
-## PDF Generation
-
-### Current Approach: PDFKit
-
-The current implementation uses **PDFKit** with hardcoded coordinates. This works but is difficult to adjust.
-
-**Location:** `src/generators/pdfGenerator.ts`
-
-**Pros:**
-- ✅ No external dependencies
-- ✅ Fast generation
-- ✅ Full control
-
-**Cons:**
-- ❌ Hardcoded X/Y coordinates (e.g., `.text('Invoice', 50, 200)`)
-- ❌ Difficult to adjust layout
-- ❌ Manual recalculation needed when adding fields
-
-### Recommended: HTML-to-PDF Approach
-
-For easier customization, consider switching to an HTML-to-PDF library:
-
-**Option 1: Puppeteer** (recommended)
-```bash
-npm install puppeteer
-```
-
-**Option 2: html-pdf-node**
-```bash
-npm install html-pdf-node
-```
-
-**Benefits:**
-- ✅ Use the same HTML templates for preview and PDF
-- ✅ CSS-based layout (much easier to adjust)
-- ✅ No coordinate calculations
-- ✅ WYSIWYG - what you style is what you get
-
-**Example Implementation:**
-```typescript
-import puppeteer from 'puppeteer';
-
-async function generatePDFFromHTML(html: string, outputPath: string) {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(html);
-  await page.pdf({
-    path: outputPath,
-    format: 'A4',
-    printBackground: true
-  });
-  await browser.close();
-}
-```
-
-## Making Layout Changes Easy
-
-### Best Practices
-
-1. **Use CSS Variables** for colors:
-```css
-:root {
-  --primary-color: #1a73e8;
-  --border-color: #d3d3d3;
-  --text-color: #000;
-}
-
-th {
-  background-color: var(--border-color);
-}
-```
-
-2. **Use Flexbox** for responsive layouts:
-```css
-.container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-```
-
-3. **Keep templates simple** - avoid inline styles when possible
-
-4. **Test changes** by generating a sample invoice after each edit
-
-## Testing Your Changes
-
-After modifying templates, test them:
-
-```bash
-# Build the project
-npm run build
-
-# Generate a test invoice
-npm run generate -- generate \
-  --salary 100 \
-  --bonus 100 \
-  --month November \
-  --output test-invoice.pdf
-
-# Check the generated files:
-# - test-invoice.pdf (PDF invoice)
-# - test-invoice_email.txt (plain text email)
-# - test-invoice_email.html (HTML email - open in browser to preview)
-```
-
-**Preview HTML email:**
-```bash
-# Open in your default browser
-open test-invoice_email.html  # macOS
-xdg-open test-invoice_email.html  # Linux
-start test-invoice_email.html  # Windows
-```
-
-## Common Customization Tasks
-
-### 1. Add a New Field to Invoice
-
-**Step 1:** Add to config.json:
+**Example - Change colors:**
 ```json
 {
-  "personal": {
-    "name": "John",
-    "title": "Senior Engineer"  // NEW
+  "colors": {
+    "primary": "#2C3E50",
+    "tableHeader": "#3498DB",
+    "tableBorder": "#2C3E50"
   }
 }
 ```
 
-**Step 2:** Update TypeScript types (src/types/invoice.ts:5):
-```typescript
-export interface PersonalInfo {
-  name: string;
-  surname: string;
-  title?: string;  // NEW - optional
-  email: string;
-  phone: string;
+**Example - Adjust font sizes:**
+```json
+{
+  "fonts": {
+    "sizes": {
+      "small": 11,
+      "normal": 12,
+      "large": 16,
+      "title": 20
+    }
+  }
 }
 ```
 
-**Step 3:** Use in template:
-```html
-<p class="name">{{personal.name}} {{personal.surname}}</p>
-{{#if personal.title}}
-  <p class="title">{{personal.title}}</p>
+**Example - Modify spacing:**
+```json
+{
+  "spacing": {
+    "lineHeight": 18,
+    "sectionGap": 30,
+    "smallGap": 15
+  }
+}
+```
+
+**After editing:** Just save and run the invoice generator. No rebuild needed!
+
+### PDF Layout Changes (Advanced)
+
+For layout changes (table structure, sections, positioning):
+
+**Location:** `src/generators/improvedPdfGenerator.ts`
+
+**What requires TypeScript editing:**
+- Table column widths
+- Row heights
+- Adding/removing sections
+- Repositioning elements
+- Adding logos or images
+
+**After editing:** Run `npm run build`
+
+See [PDF_CUSTOMIZATION.md](./PDF_CUSTOMIZATION.md) for detailed PDF customization guide.
+
+## Handlebars Syntax Reference
+
+Both email templates use Handlebars templating:
+
+### Variables
+```handlebars
+{{variableName}}           <!-- Simple variable -->
+{{object.property}}        <!-- Nested property -->
+```
+
+### Conditionals
+```handlebars
+{{#if condition}}
+  Content shown if true
+{{else}}
+  Content shown if false
 {{/if}}
 ```
 
-### 2. Change Invoice Number Format
-
-**Location:** `src/index.ts:26`
-
-```typescript
-// Current format: "21/11/2025"
-function generateInvoiceNumber(date: Date): string {
-  return format(date, 'dd/MM/yyyy');
-}
-
-// Try these formats:
-return format(date, 'yyyy-MM-dd');        // "2025-11-21"
-return `INV-${format(date, 'yyyyMMdd')}`;  // "INV-20251121"
-return `${format(date, 'yyyy')}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;  // "2025-A4F2G8"
+### Loops
+```handlebars
+{{#each items}}
+  <div>{{this.name}}</div>
+{{/each}}
 ```
 
-### 3. Add Tax Calculations
-
-**Update types:**
-```typescript
-export interface InvoiceData {
-  // ... existing fields
-  subtotal: number;
-  taxRate: number;
-  taxAmount: number;
-  total: number;
-}
+### Comments
+```handlebars
+{{! This is a comment }}
 ```
 
-**Update template:**
-```html
-<tr>
-  <td>Subtotal</td>
-  <td>{{subtotal}} {{currency}}</td>
-</tr>
-<tr>
-  <td>Tax ({{taxRate}}%)</td>
-  <td>{{taxAmount}} {{currency}}</td>
-</tr>
-<tr class="total-row">
-  <td>TOTAL</td>
-  <td>{{total}} {{currency}}</td>
-</tr>
+## Best Practices
+
+### Email Templates
+1. ✅ Test in multiple email clients (Gmail, Outlook, Apple Mail)
+2. ✅ Use inline CSS styles for better compatibility
+3. ✅ Keep total email size under 100KB
+4. ✅ Use web-safe fonts (Arial, Helvetica, Georgia, Times, Courier)
+5. ✅ Include alt text for images
+6. ✅ Test with real data before sending
+
+### PDF Configuration
+1. ✅ Make small changes and test incrementally
+2. ✅ Keep backup of original `pdf-config.json`
+3. ✅ Use valid JSON (no trailing commas, proper quotes)
+4. ✅ Use hex color codes (#RRGGBB) for consistency
+5. ✅ Test font sizes with longest content
+6. ✅ Ensure margins don't cause content overflow
+
+## Testing Your Changes
+
+### Test Email Template
+```bash
+# Generate test invoice to see email output
+npm start
 ```
+
+The email HTML will be logged to console for verification.
+
+### Test PDF Configuration
+```bash
+# Generate test invoice
+npm start
+
+# Check the generated PDF
+# - Invoice-2024-11-21.pdf
+```
+
+## Comparison: Email vs PDF Customization
+
+| Feature | Email Templates | PDF Generation |
+|---------|----------------|----------------|
+| **Format** | HTML/CSS | JSON config + TypeScript |
+| **Styling changes** | Edit HTML/CSS | Edit `pdf-config.json` |
+| **Layout changes** | Edit HTML | Edit TypeScript |
+| **Rebuild for styling** | ❌ No | ❌ No (JSON config) |
+| **Rebuild for layout** | ❌ No | ✅ Yes |
+| **Preview** | Open in browser | Generate PDF |
+| **Skills needed** | HTML/CSS | JSON (basic), TypeScript (advanced) |
+| **Designer-friendly** | ✅ Yes | ⚠️ For colors/fonts only |
+| **True templates** | ✅ Yes | ❌ No (config-based) |
 
 ## Troubleshooting
 
-**Problem: Changes not appearing**
-- Solution: Run `npm run build` after every code change
-- Check: Make sure you're editing the right template file
+### Email Template Issues
 
-**Problem: Handlebars syntax errors**
-- Solution: Check matching `{{#each}}...{{/each}}` and `{{#if}}...{{/if}}` blocks
-- Validate: Use online Handlebars validator
+**Problem: Variables not rendering**
+- Solution: Check variable names match config.ts data structure
+- Example: Use `{{personal.name}}` not `{{name}}`
+
+**Problem: Styling broken in some email clients**
+- Solution: Use inline styles instead of `<style>` tags
+- Use web-safe fonts and simple layouts
+
+**Problem: Links not clickable**
+- Solution: Ensure proper `<a href="...">` tags
+- Use full URLs with `https://` or `mailto:`
+
+### PDF Configuration Issues
+
+**Problem: Config changes not appearing**
+- Solution: Check `pdf-config.json` is in project root
+- Verify JSON is valid (use JSON validator)
+- Check console for config load warnings
 
 **Problem: PDF layout broken**
-- Solution: If using PDFKit, check X/Y coordinates don't overlap
-- Better: Switch to HTML-to-PDF approach for easier layout management
+- Solution: Restore original config values
+- Verify numbers are positive
+- Check margins aren't too large for page size
 
-**Problem: Email formatting issues**
-- Solution: Test HTML email in multiple clients (Gmail, Outlook, etc.)
-- Use: Tables for layout in emails for better compatibility
+**Problem: Text overlapping**
+- Solution: Increase `lineHeight` or `sectionGap`
+- Reduce font sizes
+- Increase page margins
+
+## Advanced Customization
+
+### Multi-Language Support
+
+Email templates already support multi-language via variables:
+```handlebars
+{{#if language.polish}}
+  Dziękuję za współpracę
+{{else}}
+  Thank you for your business
+{{/if}}
+```
+
+### Conditional Sections
+
+Add conditional content based on data:
+```handlebars
+{{#if hasBonus}}
+  <p>Congratulations on your bonus!</p>
+{{/if}}
+```
+
+### Custom Styling Per Client
+
+You can create multiple config files:
+```bash
+pdf-config-client1.json
+pdf-config-client2.json
+pdf-config-default.json
+```
+
+Then load the appropriate one in your code.
+
+## Migration Notes
+
+### Previous HTML Invoice Templates
+
+Earlier versions had `invoice-english.html` and `invoice-polish.html` templates, but these were not used for PDF generation. They have been removed in favor of the configuration-based approach.
+
+**Why the change?**
+- HTML-to-PDF libraries require external dependencies (browsers, renderers)
+- Configuration-based approach works in all environments
+- No external dependencies or network requirements
+- Styling can still be customized via JSON config
+
+**For true template-based PDFs:**
+This would require HTML-to-PDF libraries like Puppeteer, which need browser environments. The current config-based approach is a good compromise for environments where those dependencies aren't available.
 
 ## Summary
 
-### Easy to Customize ✅
-- ✅ Email HTML templates (colors, fonts, layout)
-- ✅ Invoice HTML templates (all styling via CSS)
-- ✅ Add/remove fields by editing templates
-- ✅ Change colors, fonts, spacing with CSS
+### Email Templates ✅
+- **True HTML/CSS templates**
+- Edit `src/templates/email.html`
+- No rebuild needed
+- Preview in browser
+- Designer-friendly
 
-### Requires More Work ⚠️
-- ⚠️ PDFKit coordinate-based layout (consider switching to HTML-to-PDF)
-- ⚠️ Adding complex business logic (requires TypeScript changes)
+### PDF Configuration ⚠️
+- **Config-based system**
+- Edit `pdf-config.json` for styling (no rebuild)
+- Edit TypeScript for layout (rebuild required)
+- Good for colors/fonts/spacing
+- Advanced changes need coding
 
-### Recommended Next Steps
-
-1. **Customize email template** - easiest place to start
-2. **Adjust invoice colors and fonts** - pure CSS changes
-3. **Consider HTML-to-PDF migration** - for easier PDF customization long-term
-
-Happy customizing! 🎨
+For detailed PDF customization, see [PDF_CUSTOMIZATION.md](./PDF_CUSTOMIZATION.md).

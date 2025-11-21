@@ -2,45 +2,100 @@ import PDFDocument from 'pdfkit';
 import { InvoiceData, Config } from '../types/invoice';
 import { format } from 'date-fns';
 import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Improved PDF Generator with configurable layout
  *
- * This generator uses PDFKit but with a much better abstraction layer.
- * Layout is configured via constants at the top, making it easy to adjust
- * without recalculating every coordinate.
+ * This generator uses PDFKit with a configuration-based abstraction layer.
+ * Layout is loaded from pdf-config.json, making it easy to adjust colors,
+ * fonts, spacing, and margins without editing code or rebuilding.
  */
 
-// Layout Configuration - Easy to adjust!
-const LAYOUT = {
+// Type definition for layout configuration
+interface LayoutConfig {
   page: {
-    margin: { top: 50, bottom: 50, left: 50, right: 50 },
-    width: 595, // A4 width in points
-    height: 842  // A4 height in points
-  },
+    margin: { top: number; bottom: number; left: number; right: number };
+    width: number;
+    height: number;
+  };
   colors: {
-    primary: '#000000',
-    secondary: '#666666',
-    link: 'blue',
-    tableHeader: '#d3d3d3',
-    tableBorder: '#000000'
-  },
+    primary: string;
+    secondary: string;
+    link: string;
+    tableHeader: string;
+    tableBorder: string;
+  };
   fonts: {
-    regular: 'Helvetica',
-    bold: 'Helvetica-Bold',
+    regular: string;
+    bold: string;
     sizes: {
-      small: 10,
-      normal: 11,
-      large: 14,
-      title: 16
-    }
-  },
+      small: number;
+      normal: number;
+      large: number;
+      title: number;
+    };
+  };
   spacing: {
-    lineHeight: 15,
-    sectionGap: 20,
-    smallGap: 10
+    lineHeight: number;
+    sectionGap: number;
+    smallGap: number;
+  };
+}
+
+/**
+ * Load layout configuration from external pdf-config.json file
+ */
+function loadLayoutConfig(): LayoutConfig {
+  // Try multiple possible locations for the config file
+  const possiblePaths = [
+    path.join(process.cwd(), 'pdf-config.json'),           // Project root (production)
+    path.join(__dirname, '../../pdf-config.json'),         // From dist/ directory
+    path.join(__dirname, '../../../pdf-config.json')       // Alternative location
+  ];
+
+  for (const configPath of possiblePaths) {
+    if (fs.existsSync(configPath)) {
+      const configData = fs.readFileSync(configPath, 'utf-8');
+      return JSON.parse(configData);
+    }
   }
-};
+
+  // Fallback to default configuration if file not found
+  console.warn('pdf-config.json not found, using default configuration');
+  return {
+    page: {
+      margin: { top: 50, bottom: 50, left: 50, right: 50 },
+      width: 595,
+      height: 842
+    },
+    colors: {
+      primary: '#000000',
+      secondary: '#666666',
+      link: 'blue',
+      tableHeader: '#d3d3d3',
+      tableBorder: '#000000'
+    },
+    fonts: {
+      regular: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      sizes: {
+        small: 10,
+        normal: 11,
+        large: 14,
+        title: 16
+      }
+    },
+    spacing: {
+      lineHeight: 15,
+      sectionGap: 20,
+      smallGap: 10
+    }
+  };
+}
+
+// Load layout configuration from external file
+const LAYOUT = loadLayoutConfig();
 
 export class ImprovedPdfGenerator {
   private doc: PDFKit.PDFDocument;

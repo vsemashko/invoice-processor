@@ -8,9 +8,9 @@ Automated bilingual (English/Polish) invoice generator with email templates for 
 - Automatic invoice numbering based on date
 - Supports variable line items (salary, bonus, reimbursements)
 - Creates **both HTML and plain text** email templates with StashAway signature
-- **Template-based customization** - easy to adjust layouts, colors, and styling
+- **Easy customization** - HTML templates for emails, JSON config for PDF styling
 - Configurable personal, company, recipient, and bank details
-- Built with Handlebars templates for maximum flexibility
+- Built with Handlebars templates for emails and configuration-based PDF generation
 
 ## Installation
 
@@ -110,23 +110,23 @@ The tool generates three files:
 invoice-processor/
 ├── src/
 │   ├── types/
-│   │   └── invoice.ts          # TypeScript type definitions
+│   │   └── invoice.ts            # TypeScript type definitions
 │   ├── generators/
-│   │   ├── pdfGenerator.ts     # PDF generation logic
-│   │   └── emailGenerator.ts   # Email template generation
-│   ├── templates/              # Handlebars templates
-│   │   ├── email.html          # HTML email template
-│   │   ├── invoice-english.html # English invoice HTML
-│   │   └── invoice-polish.html  # Polish invoice HTML
+│   │   ├── improvedPdfGenerator.ts # PDF generation with config system
+│   │   └── emailGenerator.ts     # Email template generation
+│   ├── templates/                # Handlebars templates
+│   │   └── email.html            # HTML email template
 │   ├── utils/
-│   │   └── templateRenderer.ts # Template rendering utilities
-│   └── index.ts                # CLI entry point
-├── config.json                 # Your configuration (not in git)
-├── config.example.json         # Example configuration template
+│   │   └── templateRenderer.ts   # Template rendering utilities
+│   └── index.ts                  # CLI entry point
+├── pdf-config.json               # PDF styling configuration
+├── config.json                   # Your configuration (not in git)
+├── config.example.json           # Example configuration template
 ├── package.json
 ├── tsconfig.json
-├── README.md                   # This file
-└── TEMPLATE_CUSTOMIZATION.md   # Guide for customizing templates
+├── README.md                     # This file
+├── PDF_CUSTOMIZATION.md          # Guide for customizing PDFs
+└── TEMPLATE_CUSTOMIZATION.md     # Guide for customizing templates
 ```
 
 ## Configuration
@@ -168,30 +168,34 @@ The `config.json` file contains all your personal and business details:
 
 ## Customization
 
-**Both PDFs and emails are now easy to customize!**
-
 ### PDF Customization ⭐ NEW & IMPROVED!
 
-The PDF generator now uses a **configuration-based layout system** making customization much easier:
+The PDF generator uses a **configuration-based system** with external JSON config:
 
-✅ **Change colors** - Edit simple config values
-✅ **Adjust fonts and sizes** - All in one place
-✅ **Modify spacing** - No coordinate calculations needed
-✅ **Update margins** - Quick and easy
+**Easy styling (no rebuild required):**
+✅ **Change colors** - Edit `pdf-config.json`
+✅ **Adjust font sizes** - Simple JSON values
+✅ **Modify spacing** - No code changes needed
+✅ **Update margins** - Quick JSON edits
 
 **Quick Example - Change table header color:**
-```typescript
-// Edit src/generators/improvedPdfGenerator.ts
-const LAYOUT = {
-  colors: {
-    tableHeader: '#4A90E2',  // Just change this!
+```json
+// Edit pdf-config.json
+{
+  "colors": {
+    "tableHeader": "#4A90E2"
   }
-};
+}
 ```
 
-**See the full guide:** [PDF_CUSTOMIZATION.md](PDF_CUSTOMIZATION.md) - Complete examples for colors, fonts, spacing, and advanced customizations.
+**No rebuild needed!** Just edit the JSON file and run the generator.
 
-### Email Customization
+**Advanced customization (requires rebuild):**
+- Layout structure and positioning require editing `src/generators/improvedPdfGenerator.ts`
+
+**See the full guide:** [PDF_CUSTOMIZATION.md](PDF_CUSTOMIZATION.md) - Complete examples for styling, theming, and advanced customizations.
+
+### Email Customization ✅ True Templates
 
 Email templates use HTML/CSS for rich formatting:
 
@@ -199,16 +203,24 @@ Email templates use HTML/CSS for rich formatting:
 ✅ **Clickable links** and emojis
 ✅ **Easy CSS editing**
 ✅ **Professional signatures**
+✅ **No rebuild needed**
 
 **Quick Example - Change email brand color:**
-```css
-/* Edit src/templates/email.html */
-.signature .company {
-  color: #1a73e8;  /* Your brand color */
-}
+```html
+<!-- Edit src/templates/email.html -->
+<div style="border-top: 2px solid #1a73e8;">
 ```
 
 **See the full guide:** [TEMPLATE_CUSTOMIZATION.md](TEMPLATE_CUSTOMIZATION.md) - Covers email templates, adding logos, and common customization tasks.
+
+### Comparison
+
+| Feature | Email | PDF |
+|---------|-------|-----|
+| Styling | Edit HTML/CSS | Edit JSON config |
+| Layout | Edit HTML | Edit TypeScript |
+| Rebuild needed | ❌ No | ❌ No (for styling) |
+| True templates | ✅ Yes | ❌ No (config-based) |
 
 ## Development
 

@@ -49,9 +49,4 @@ export class TemplateRenderer {
 
     return { html, text };
   }
-
-  public renderInvoiceHTML(data: any, language: 'english' | 'polish'): string {
-    const templateName = language === 'english' ? 'invoice-english.html' : 'invoice-polish.html';
-    return this.render(templateName, data);
-  }
 }
