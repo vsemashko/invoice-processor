@@ -1,0 +1,30 @@
+{
+  "personal": {
+    "name": "Name",
+    "surname": "SURNAME",
+    "email": "email@company",
+    "phone": "+PHONE"
+  },
+  "company": {
+    "name": "Asia Wealth Platform Pte Ltd",
+    "address": "175A Bencoolen Street",
+    "addressLine2": "Burlington Square #07-04",
+    "city": "Singapore",
+    "postalCode": "189650"
+  },
+  "recipient": {
+    "name": "Name Surname",
+    "address": "ul. XXXX m X, Warszawa XX-XXX",
+    "city": "Poland, Warsaw",
+    "country": "Poland",
+    "nip": "XXXX",
+    "regon": "XXXX"
+  },
+  "bank": {
+    "bankName": "PKO BANK POLSKI S.A.",
+    "bankAddress": "UL. PULAWSKA , 15, WARSZAWA, Poland",
+    "iban": "XXXXXX",
+    "beneficiaryPassport": "XXXXX",
+    "bic": "BPKOPLPW"
+  }
+}
