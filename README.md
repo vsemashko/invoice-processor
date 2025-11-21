@@ -166,43 +166,49 @@ The `config.json` file contains all your personal and business details:
 }
 ```
 
-## Template Customization
+## Customization
 
-**All templates use Handlebars and are easy to customize!**
+**Both PDFs and emails are now easy to customize!**
 
-The system uses HTML templates with CSS styling, making it simple to:
+### PDF Customization ⭐ NEW & IMPROVED!
 
-✅ Change colors, fonts, and layout
-✅ Add or remove fields
-✅ Modify email signatures
-✅ Adjust invoice formatting
+The PDF generator now uses a **configuration-based layout system** making customization much easier:
 
-### Quick Customization Examples
+✅ **Change colors** - Edit simple config values
+✅ **Adjust fonts and sizes** - All in one place
+✅ **Modify spacing** - No coordinate calculations needed
+✅ **Update margins** - Quick and easy
 
-**Change email colors:**
-Edit `src/templates/email.html` and modify the CSS:
+**Quick Example - Change table header color:**
+```typescript
+// Edit src/generators/improvedPdfGenerator.ts
+const LAYOUT = {
+  colors: {
+    tableHeader: '#4A90E2',  // Just change this!
+  }
+};
+```
+
+**See the full guide:** [PDF_CUSTOMIZATION.md](PDF_CUSTOMIZATION.md) - Complete examples for colors, fonts, spacing, and advanced customizations.
+
+### Email Customization
+
+Email templates use HTML/CSS for rich formatting:
+
+✅ **HTML templates** with styling
+✅ **Clickable links** and emojis
+✅ **Easy CSS editing**
+✅ **Professional signatures**
+
+**Quick Example - Change email brand color:**
 ```css
+/* Edit src/templates/email.html */
 .signature .company {
-  color: #1a73e8;  /* Change to your brand color */
+  color: #1a73e8;  /* Your brand color */
 }
 ```
 
-**Adjust invoice table styling:**
-Edit `src/templates/invoice-english.html`:
-```css
-th {
-  background-color: #d3d3d3;  /* Change header color */
-}
-```
-
-**See the full customization guide:** [TEMPLATE_CUSTOMIZATION.md](TEMPLATE_CUSTOMIZATION.md)
-
-This guide includes:
-- How to change layouts and styling
-- Adding logos and images
-- Modifying fields and data
-- Best practices for template editing
-- Common customization tasks
+**See the full guide:** [TEMPLATE_CUSTOMIZATION.md](TEMPLATE_CUSTOMIZATION.md) - Covers email templates, adding logos, and common customization tasks.
 
 ## Development
 

@@ -4,7 +4,7 @@ import { Command } from 'commander';
 import { format } from 'date-fns';
 import * as fs from 'fs';
 import * as path from 'path';
-import { PDFGenerator } from './generators/pdfGenerator';
+import { ImprovedPdfGenerator } from './generators/improvedPdfGenerator';
 import { EmailGenerator } from './generators/emailGenerator';
 import { Config, InvoiceData, InvoiceLineItem, InvoiceInput } from './types/invoice';
 
@@ -117,8 +117,8 @@ program
 
       const invoiceData = buildInvoiceData(invoiceInput, config);
 
-      // Generate PDF
-      const pdfGenerator = new PDFGenerator(config);
+      // Generate PDF using improved layout system
+      const pdfGenerator = new ImprovedPdfGenerator(config);
       const outputPath = path.join(process.cwd(), options.output);
 
       pdfGenerator.generate(invoiceData, outputPath).then(() => {
